@@ -1,11 +1,15 @@
 import errno
-import numpy as np
 import datetime as dt
 import os
 import random
 import simplejson
 
 from jinja2 import Environment, PackageLoader
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 
 def js_escape(value):
@@ -21,10 +25,9 @@ def get_tmp_file_path():
 
 def to_json(data):
     def dthandler(obj):
-        if isinstance(obj, np.ndarray):
+        if np and isinstance(obj, np.ndarray):
             return [dthandler(rec) for rec in obj.tolist()]
-
-        if isinstance(obj, np.generic):
+        if np and isinstance(obj, np.generic):
             return np.asscalar(obj)
         if isinstance(obj, dt.datetime):
             return obj.isoformat()
