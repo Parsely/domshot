@@ -99,7 +99,7 @@ class DOMShot(object):
 
         # First, write out all global vars
         foreword = []
-        for key, val in self.env.items():
+        for key, val in list(self.env.items()):
             foreword.append('var %s = %s;\n' % (key, to_json(val)))
 
         template = env.get_template('render.jinja.js')
