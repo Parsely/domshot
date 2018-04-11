@@ -64,9 +64,9 @@ class DOMShot(object):
             self.load_file(file)
 
     @staticmethod
-    def get_file_contents(filename, encoding='utf-8'):
+    def get_file_contents(filename):
         with open(filename, 'r') as f:
-            return f.read().decode(encoding)
+            return f.read()
 
     @staticmethod
     def get_file_bytes(filename):
