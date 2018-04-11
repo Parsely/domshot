@@ -141,7 +141,7 @@ class DOMShot(object):
         p = Popen(['phantomjs', '/dev/stdin'], stdin=PIPE, stdout=PIPE,
                 stderr=STDOUT)
         stdout, _ = p.communicate(stdin)
-        stdout = self._filter_stdout(stdout)
+        stdout = self._filter_stdout(stdout.decode())
         if stdout:
             raise RuntimeError('Unexpected error while running phantomjs:\n%s'
                     % '\n'.join(stdout))
