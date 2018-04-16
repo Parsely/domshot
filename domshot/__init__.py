@@ -65,8 +65,8 @@ class DOMShot(object):
 
     @staticmethod
     def get_file_contents(filename):
-        with open(filename, 'r') as f:
-            return f.read()
+        with open(filename, 'rb') as f:
+            return f.read().decode("utf-8")
 
     @staticmethod
     def get_file_bytes(filename):
@@ -99,7 +99,7 @@ class DOMShot(object):
 
         # First, write out all global vars
         foreword = []
-        for key, val in list(self.env.items()):
+        for key, val in self.env.items():
             foreword.append('var %s = %s;\n' % (key, to_json(val)))
 
         template = env.get_template('render.jinja.js')
