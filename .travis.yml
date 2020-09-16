@@ -12,6 +12,9 @@ python:
 
 install: skip
 
+script:
+  - echo "skipping tests"
+
 before_deploy:
   - pip install --upgrade wheel
   - python setup.py bdist_wheel
