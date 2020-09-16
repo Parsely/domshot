@@ -10,6 +10,8 @@ branches:
 python:
   - "3.6"
 
+install: skip
+
 before_deploy:
   - pip install --upgrade wheel
   - python setup.py bdist_wheel
