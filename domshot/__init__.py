@@ -4,7 +4,7 @@ import os
 import random
 import simplejson
 
-from jinja2 import Environment, PackageLoader
+from jinja2 import Environment, PackageLoader, Template
 
 try:
     import numpy as np
@@ -40,6 +40,45 @@ def to_json(data):
 
     return simplejson.dumps(data, default=dthandler)
 
+render_template = """
+var page = require('webpage').create()
+
+// Set up logging, so we can see JS errors in the browser
+page.onError = function (msg, trace) {
+    console.log(msg);
+    trace.forEach(function(item) {
+        console.log('  ', item.file, ':', item.line);
+    })
+}
+
+// Allow console.log statements in the browser to trickle down to the console
+page.onConsoleMessage = function (msg) {
+    console.log(msg);
+}
+
+// Set viewport before loading content
+page.viewportSize = { width: {{ clip[0] }}, height: {{ clip[1] }} }
+
+page.content = "\
+        <html>\
+            <head>\
+            <style type=text/css>\
+            {{ css|js_escape|safe }}\
+            </style>\
+            </head>\
+            {{ body|js_escape|safe or "<body></body>" }}\
+        </html>\
+        "
+
+page.clipRect = { top: 0, left: 0, width: {{ clip[0] }}, height: {{ clip[1] }} }
+
+page.evaluate(function () {
+    {{ foreword|safe }}
+    {{ inline_js|safe }}
+})
+page.render("{{ tmpfile|js_escape|safe }}")
+phantom.exit(0)
+"""
 
 class DOMShot(object):
     def __init__(self):
@@ -94,7 +133,7 @@ class DOMShot(object):
         self.js += '\n' + js_contents
 
     def generate_script(self):
-        env = Environment(loader=PackageLoader('domshot', 'templates'))
+        env = Environment()
         env.filters['js_escape'] = js_escape
 
         # First, write out all global vars
@@ -102,7 +141,7 @@ class DOMShot(object):
         for key, val in self.env.items():
             foreword.append('var %s = %s;\n' % (key, to_json(val)))
 
-        template = env.get_template('render.jinja.js')
+        template = Template(render_template)
 
         self._tmpfile = get_tmp_file_path()
         self._script = template.render(
