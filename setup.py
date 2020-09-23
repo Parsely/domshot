@@ -5,7 +5,7 @@ install_requires = [l.split('#')[0].strip()
                     if not l.startswith('#') and not l.startswith('-e')]
 setup(
     name='domshot',
-    version='0.1.5',
+    version='0.1.6',
     packages = find_packages(),
     install_requires=install_requires,
 )

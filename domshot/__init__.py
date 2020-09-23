@@ -4,7 +4,7 @@ import os
 import random
 import simplejson
 
-from jinja2 import Environment, PackageLoader, Template
+from jinja2 import Environment
 
 try:
     import numpy as np
@@ -141,7 +141,7 @@ class DOMShot(object):
         for key, val in self.env.items():
             foreword.append('var %s = %s;\n' % (key, to_json(val)))
 
-        template = Template(render_template)
+        template = env.from_string(render_template)
 
         self._tmpfile = get_tmp_file_path()
         self._script = template.render(
